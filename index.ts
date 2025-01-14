@@ -1,19 +1,11 @@
-import {
-  AwyesClient,
-  credentials,
-  Node,
-  RegisterNodeRequest,
-} from "@the-sage-group/awyes";
+import { AwyesClient, credentials, Node } from "@the-sage-group/awyes-node";
 
 import * as aws from "./aws";
 
 const client = new AwyesClient("localhost:50051", credentials.createInsecure());
 
 for (const { node } of Object.values(aws.nodes)) {
-  const request: RegisterNodeRequest = {
-    node: node as Node,
-  };
-  client.registerNode(request, (error, response) => {
+  client.registerNode({ node: node as Node }, (error, response) => {
     if (error) {
       console.error(error);
     } else {

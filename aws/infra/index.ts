@@ -1,4 +1,4 @@
-import { Node } from "@the-sage-group/awyes";
+import { Node } from "@the-sage-group/awyes-node";
 import { clients } from "../clients";
 
 export const getInfra = {
