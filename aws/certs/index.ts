@@ -1,6 +1,6 @@
-import { Node } from "@the-sage-group/awyes-node";
+import { FieldDescriptorProto_Type, Value } from "@the-sage-group/awyes-node";
 import { waitUntilCertificateValidated } from "@aws-sdk/client-acm";
-import { clients } from "../clients";
+import { HandlerClients } from "../clients";
 
 export const createCertificates = {
   node: {
@@ -9,12 +9,21 @@ export const createCertificates = {
     name: "create_certificates",
     description:
       "Creates ACM certificates for the specified domain and subdomains",
+    parameters: [
+      { name: "domainName", type: FieldDescriptorProto_Type.TYPE_STRING },
+      { name: "subDomains", type: FieldDescriptorProto_Type.TYPE_STRING },
+    ],
+    returns: [
+      { name: "certificateArn", type: FieldDescriptorProto_Type.TYPE_STRING },
+      { name: "hostedZoneId", type: FieldDescriptorProto_Type.TYPE_STRING },
+    ],
   },
-  async handler({ acm, route53 }: typeof clients, params: Node["parameters"]) {
-    const { domainName, subDomains } = params as {
-      domainName: string;
-      subDomains: string[];
-    };
+  async handler(
+    clients: HandlerClients,
+    params: { domainName: string; subDomains: string[] }
+  ) {
+    const { acm, route53 } = clients;
+    const { domainName, subDomains } = params;
 
     await acm.requestCertificate({
       DomainName: domainName,
@@ -59,9 +68,15 @@ export const createCertificates = {
       { CertificateArn: certificate?.CertificateArn }
     );
 
+    if (!certificate?.CertificateArn || !hostedZone.HostedZoneId) {
+      throw new Error(
+        "Failed to create certificate: Missing required return values"
+      );
+    }
+
     return {
-      certificateArn: certificate?.CertificateArn!,
-      hostedZoneId: hostedZone.HostedZoneId!,
+      certificateArn: certificate.CertificateArn,
+      hostedZoneId: hostedZone.HostedZoneId,
     };
   },
 };

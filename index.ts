@@ -4,7 +4,7 @@ import * as aws from "./aws";
 
 const client = new AwyesClient("localhost:50051", credentials.createInsecure());
 
-for (const { node } of Object.values(aws.nodes)) {
+for (const { node, handler } of aws.nodes) {
   client.registerNode({ node: node as Node }, (error, response) => {
     if (error) {
       console.error(error);

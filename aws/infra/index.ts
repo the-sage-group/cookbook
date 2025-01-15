@@ -1,5 +1,8 @@
-import { Node } from "@the-sage-group/awyes-node";
-import { clients } from "../clients";
+import {
+  FieldDescriptorProto_Type,
+  FieldDescriptorProto_Label,
+} from "@the-sage-group/awyes-node";
+import { HandlerClients } from "../clients";
 
 export const getInfra = {
   node: {
@@ -8,8 +11,23 @@ export const getInfra = {
     name: "get_infra",
     description:
       "Retrieves infrastructure details such as VPCs, subnets, and subnet IDs",
+    parameters: [],
+    returns: [
+      {
+        name: "subnetIds",
+        type: FieldDescriptorProto_Type.TYPE_STRING,
+        label: FieldDescriptorProto_Label.LABEL_REPEATED,
+      },
+      {
+        name: "vpcIds",
+        type: FieldDescriptorProto_Type.TYPE_STRING,
+        label: FieldDescriptorProto_Label.LABEL_REPEATED,
+      },
+    ],
   },
-  async handler({ ec2 }: typeof clients, params: Node["parameters"]) {
+  async handler(clients: HandlerClients) {
+    const { ec2 } = clients;
+
     const describeVpcs = await ec2.describeVpcs();
     const describeSubnets = await ec2.describeSubnets({
       Filters: [
@@ -19,10 +37,16 @@ export const getInfra = {
         },
       ],
     });
+
+    if (!describeVpcs.Vpcs || !describeSubnets.Subnets) {
+      throw new Error(
+        "Failed to fetch infrastructure: Missing VPCs or Subnets"
+      );
+    }
+
     return {
-      subnetIds:
-        describeSubnets.Subnets?.map((subnet) => subnet.SubnetId!) || [],
-      vpcIds: describeVpcs.Vpcs?.map((vpc) => vpc.VpcId!) || [],
+      subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId!),
+      vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId!),
     };
   },
 };

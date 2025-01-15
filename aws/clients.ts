@@ -11,3 +11,5 @@ export const clients = {
   elb: new ELB.ElasticLoadBalancingV2({ region: "us-west-2" }),
   iam: new IAM.IAM({ region: "us-west-2" }),
 };
+
+export type HandlerClients = typeof clients;
