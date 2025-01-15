@@ -9,7 +9,7 @@ for (const { node, handler } of aws.nodes) {
     if (error) {
       console.error(error);
     } else {
-      console.log(response);
+      console.dir(response, { depth: null });
     }
   });
 }

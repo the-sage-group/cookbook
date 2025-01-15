@@ -1,4 +1,7 @@
-import { FieldDescriptorProto_Type, Value } from "@the-sage-group/awyes-node";
+import {
+  FieldDescriptorProto_Type,
+  FieldDescriptorProto_Label,
+} from "@the-sage-group/awyes-node";
 import { waitUntilCertificateValidated } from "@aws-sdk/client-acm";
 import { HandlerClients } from "../clients";
 
@@ -11,7 +14,11 @@ export const createCertificates = {
       "Creates ACM certificates for the specified domain and subdomains",
     parameters: [
       { name: "domainName", type: FieldDescriptorProto_Type.TYPE_STRING },
-      { name: "subDomains", type: FieldDescriptorProto_Type.TYPE_STRING },
+      {
+        name: "subDomains",
+        type: FieldDescriptorProto_Type.TYPE_STRING,
+        label: FieldDescriptorProto_Label.LABEL_REPEATED,
+      },
     ],
     returns: [
       { name: "certificateArn", type: FieldDescriptorProto_Type.TYPE_STRING },
