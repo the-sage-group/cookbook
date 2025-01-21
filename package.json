@@ -4,6 +4,7 @@
   "description": "A cookbook for awyes",
   "main": "index.ts",
   "scripts": {
+    "start": "npx tsx index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
