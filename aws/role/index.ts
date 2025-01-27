@@ -1,22 +1,20 @@
-import { FieldDescriptorProto_Type } from "@the-sage-group/awyes-node";
+import { Status, Type, Event } from "@the-sage-group/awyes-node";
 import { HandlerClients } from "../clients";
 
 export const createRole = {
-  node: {
-    version: 1,
-    context: "aws",
-    name: "create_role",
-    description: "Creates an IAM role with the specified name",
-    parameters: [
-      { name: "name", type: FieldDescriptorProto_Type.TYPE_STRING },
-      { name: "description", type: FieldDescriptorProto_Type.TYPE_STRING },
-    ],
-    returns: [{ name: "roleArn", type: FieldDescriptorProto_Type.TYPE_STRING }],
-  },
+  version: 1,
+  context: "aws",
+  name: "create_role",
+  description: "Creates an IAM role with the specified name",
+  parameters: [
+    { name: "name", type: Type.TYPE_STRING },
+    { name: "description", type: Type.TYPE_STRING },
+  ],
+  returns: [{ name: "roleArn", type: Type.TYPE_STRING }],
   async handler(
     clients: HandlerClients,
     params: { name: string; description: string }
-  ) {
+  ): Promise<Event> {
     const { iam } = clients;
     const { name, description } = params;
 
@@ -68,9 +66,16 @@ export const createRole = {
     const getRole = await iam.getRole({ RoleName: name });
 
     if (!getRole.Role?.Arn) {
-      throw new Error("Failed to create role: Missing role ARN");
+      return {
+        label: Status.ERROR.toString(),
+        message: "Failed to create role: Missing role ARN",
+        state: {},
+      };
     }
 
-    return { roleArn: getRole.Role.Arn };
+    return {
+      label: Status.COMPLETED.toString(),
+      state: { roleArn: getRole.Role.Arn },
+    };
   },
 };

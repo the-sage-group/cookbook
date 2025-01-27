@@ -1,31 +1,26 @@
-import {
-  FieldDescriptorProto_Type,
-  FieldDescriptorProto_Label,
-} from "@the-sage-group/awyes-node";
+import { Type, Label, Status, Event } from "@the-sage-group/awyes-node";
 import { HandlerClients } from "../clients";
 
 export const getInfra = {
-  node: {
-    version: 1,
-    context: "aws",
-    name: "get_infra",
-    description:
-      "Retrieves infrastructure details such as VPCs, subnets, and subnet IDs",
-    parameters: [],
-    returns: [
-      {
-        name: "subnetIds",
-        type: FieldDescriptorProto_Type.TYPE_STRING,
-        label: FieldDescriptorProto_Label.LABEL_REPEATED,
-      },
-      {
-        name: "vpcIds",
-        type: FieldDescriptorProto_Type.TYPE_STRING,
-        label: FieldDescriptorProto_Label.LABEL_REPEATED,
-      },
-    ],
-  },
-  async handler(clients: HandlerClients) {
+  version: 1,
+  context: "aws",
+  name: "get_infra",
+  description:
+    "Retrieves infrastructure details such as VPCs, subnets, and subnet IDs",
+  parameters: [],
+  returns: [
+    {
+      name: "subnetIds",
+      type: Type.TYPE_STRING,
+      label: Label.LABEL_REPEATED,
+    },
+    {
+      name: "vpcIds",
+      type: Type.TYPE_STRING,
+      label: Label.LABEL_REPEATED,
+    },
+  ],
+  async handler(clients: HandlerClients): Promise<Event> {
     const { ec2 } = clients;
 
     const describeVpcs = await ec2.describeVpcs();
@@ -39,14 +34,19 @@ export const getInfra = {
     });
 
     if (!describeVpcs.Vpcs || !describeSubnets.Subnets) {
-      throw new Error(
-        "Failed to fetch infrastructure: Missing VPCs or Subnets"
-      );
+      return {
+        label: Status.ERROR.toString(),
+        message: "Failed to fetch infrastructure: Missing VPCs or Subnets",
+        state: {},
+      };
     }
 
     return {
-      subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId!),
-      vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId!),
+      label: Status.COMPLETED.toString(),
+      state: {
+        subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId),
+        vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId),
+      },
     };
   },
 };

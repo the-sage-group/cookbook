@@ -1,31 +1,27 @@
-import {
-  FieldDescriptorProto_Type,
-  FieldDescriptorProto_Label,
-} from "@the-sage-group/awyes-node";
+import { Type, Label, Status } from "@the-sage-group/awyes-node";
 import { waitUntilCertificateValidated } from "@aws-sdk/client-acm";
 import { HandlerClients } from "../clients";
 
 export const createCertificates = {
-  node: {
-    version: 1,
-    context: "aws",
-    name: "create_certificates",
-    description:
-      "Creates ACM certificates for the specified domain and subdomains",
-    parameters: [
-      { name: "domainName", type: FieldDescriptorProto_Type.TYPE_STRING },
-      {
-        name: "subDomains",
-        type: FieldDescriptorProto_Type.TYPE_STRING,
-        label: FieldDescriptorProto_Label.LABEL_REPEATED,
-      },
-    ],
-    returns: [
-      { name: "certificateArn", type: FieldDescriptorProto_Type.TYPE_STRING },
-      { name: "hostedZoneId", type: FieldDescriptorProto_Type.TYPE_STRING },
-    ],
-  },
-  async handler(
+  version: 1,
+  context: "aws",
+  name: "create_certificates",
+  description:
+    "Creates ACM certificates for the specified domain and subdomains",
+
+  parameters: [
+    { name: "domainName", type: Type.TYPE_STRING },
+    {
+      name: "subDomains",
+      type: Type.TYPE_STRING,
+      label: Label.LABEL_REPEATED,
+    },
+  ],
+  returns: [
+    { name: "certificateArn", type: Type.TYPE_STRING },
+    { name: "hostedZoneId", type: Type.TYPE_STRING },
+  ],
+  async executor(
     clients: HandlerClients,
     params: { domainName: string; subDomains: string[] }
   ) {
@@ -76,14 +72,19 @@ export const createCertificates = {
     );
 
     if (!certificate?.CertificateArn || !hostedZone.HostedZoneId) {
-      throw new Error(
-        "Failed to create certificate: Missing required return values"
-      );
+      return {
+        label: Status.ERROR,
+        message: "Failed to create certificate: Missing required return values",
+        state: {},
+      };
     }
 
     return {
-      certificateArn: certificate.CertificateArn,
-      hostedZoneId: hostedZone.HostedZoneId,
+      label: Status.COMPLETED,
+      state: {
+        certificateArn: certificate.CertificateArn,
+        hostedZoneId: hostedZone.HostedZoneId,
+      },
     };
   },
 };

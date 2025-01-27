@@ -1,9 +1,8 @@
 import {
   AwyesClient,
   credentials,
-  Node,
   Event,
-  EventType,
+  Status,
 } from "@the-sage-group/awyes-node";
 
 import * as aws from "./aws";
@@ -12,40 +11,38 @@ import { clients } from "./aws/clients";
 const client = new AwyesClient("localhost:50051", credentials.createInsecure());
 const router = {};
 
-for (const { node, handler } of aws.nodes) {
-  client.registerNode({ node: node as Node }, (error, response) => {
+for (const handler of aws.nodes) {
+  client.registerHandler({ handler }, (error, response) => {
     if (error) {
       throw error;
     } else {
-      router[`${node.context}.${node.name}`] = handler;
+      router[`${handler.context}.${handler.name}`] = handler;
       console.dir(response, { depth: null });
     }
   });
 }
 
-const stream = client.runAndWait();
+const stream = client.runNodeAndWait();
 
-stream.on("data", async (response: Event) => {
-  // Handle each response from the server
-  console.log("Received response:", response);
-  switch (response.type) {
-    case EventType.EXECUTING:
-      const { node } = response;
-      if (!node) {
-        throw new Error("Node is undefined");
+stream.on("data", async (event: Event) => {
+  // Handle each event from the server
+  console.log("Received event:", event);
+  switch (event.status) {
+    case Status.EXECUTING:
+      const { handler } = event;
+      if (!handler) {
+        throw new Error("Handler is undefined");
       }
-      const handler = router[`${node.context}.${node.name}`];
-      const result = await handler(clients, node.parameters);
+      const handlerFn = router[`${handler.context}.${handler.name}`];
+      const result = await handlerFn(clients, event.state);
       stream.write({
-        type: EventType.COMPLETED,
-        node: node,
-        trip: response.trip,
-        label: result.label,
-        timestamp: Date.now(),
+        ...result,
+        ...event,
+        status: Status.COMPLETED,
       });
       break;
     default:
-      console.log("Unknown event type:", response.type);
+      console.log("Unknown event type:", event.status);
       break;
   }
 });
