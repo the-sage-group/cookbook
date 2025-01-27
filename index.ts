@@ -16,7 +16,7 @@ for (const handler of aws.nodes) {
     if (error) {
       throw error;
     } else {
-      router[`${handler.context}.${handler.name}`] = handler;
+      router[`${handler.context}.${handler.name}`] = handler.handler;
       console.dir(response, { depth: null });
     }
   });

@@ -21,7 +21,7 @@ export const createCertificates = {
     { name: "certificateArn", type: Type.TYPE_STRING },
     { name: "hostedZoneId", type: Type.TYPE_STRING },
   ],
-  async executor(
+  async handler(
     clients: HandlerClients,
     params: { domainName: string; subDomains: string[] }
   ) {
@@ -73,14 +73,14 @@ export const createCertificates = {
 
     if (!certificate?.CertificateArn || !hostedZone.HostedZoneId) {
       return {
-        label: Status.ERROR,
+        label: Status.ERROR.toString(),
         message: "Failed to create certificate: Missing required return values",
         state: {},
       };
     }
 
     return {
-      label: Status.COMPLETED,
+      label: Status.COMPLETED.toString(),
       state: {
         certificateArn: certificate.CertificateArn,
         hostedZoneId: hostedZone.HostedZoneId,
