@@ -1,4 +1,9 @@
-import { Status, Type, Event } from "@the-sage-group/awyes-node";
+import {
+  Label,
+  FieldType,
+  Event,
+  labelToJSON,
+} from "@the-sage-group/awyes-node";
 import { HandlerClients } from "../clients";
 
 export const createRole = {
@@ -7,10 +12,10 @@ export const createRole = {
   name: "create_role",
   description: "Creates an IAM role with the specified name",
   parameters: [
-    { name: "name", type: Type.TYPE_STRING },
-    { name: "description", type: Type.TYPE_STRING },
+    { name: "name", type: FieldType.TYPE_STRING },
+    { name: "description", type: FieldType.TYPE_STRING },
   ],
-  returns: [{ name: "roleArn", type: Type.TYPE_STRING }],
+  returns: [{ name: "roleArn", type: FieldType.TYPE_STRING }],
   async handler(
     clients: HandlerClients,
     params: { name: string; description: string }
@@ -67,14 +72,14 @@ export const createRole = {
 
     if (!getRole.Role?.Arn) {
       return {
-        label: Status.ERROR.toString(),
+        label: labelToJSON(Label.FAILURE),
         message: "Failed to create role: Missing role ARN",
         state: {},
       };
     }
 
     return {
-      label: Status.COMPLETED.toString(),
+      label: labelToJSON(Label.SUCCESS),
       state: { roleArn: getRole.Role.Arn },
     };
   },

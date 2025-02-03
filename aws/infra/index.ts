@@ -1,4 +1,10 @@
-import { Type, Label, Status, Event } from "@the-sage-group/awyes-node";
+import {
+  FieldType,
+  FieldLabel,
+  Label,
+  Event,
+  labelToJSON,
+} from "@the-sage-group/awyes-node";
 import { HandlerClients } from "../clients";
 
 export const getInfra = {
@@ -11,13 +17,13 @@ export const getInfra = {
   returns: [
     {
       name: "subnetIds",
-      type: Type.TYPE_STRING,
-      label: Label.LABEL_REPEATED,
+      type: FieldType.TYPE_STRING,
+      label: FieldLabel.LABEL_REPEATED,
     },
     {
       name: "vpcIds",
-      type: Type.TYPE_STRING,
-      label: Label.LABEL_REPEATED,
+      type: FieldType.TYPE_STRING,
+      label: FieldLabel.LABEL_REPEATED,
     },
   ],
   async handler(clients: HandlerClients): Promise<Event> {
@@ -35,14 +41,14 @@ export const getInfra = {
 
     if (!describeVpcs.Vpcs || !describeSubnets.Subnets) {
       return {
-        label: Status.ERROR.toString(),
+        label: labelToJSON(Label.FAILURE),
         message: "Failed to fetch infrastructure: Missing VPCs or Subnets",
         state: {},
       };
     }
 
     return {
-      label: Status.COMPLETED.toString(),
+      label: labelToJSON(Label.SUCCESS),
       state: {
         subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId),
         vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId),

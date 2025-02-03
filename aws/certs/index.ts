@@ -1,4 +1,10 @@
-import { Type, Label, Status } from "@the-sage-group/awyes-node";
+import {
+  FieldType,
+  FieldLabel,
+  Label,
+  Status,
+  labelToJSON,
+} from "@the-sage-group/awyes-node";
 import { waitUntilCertificateValidated } from "@aws-sdk/client-acm";
 import { HandlerClients } from "../clients";
 
@@ -10,16 +16,16 @@ export const createCertificates = {
     "Creates ACM certificates for the specified domain and subdomains",
 
   parameters: [
-    { name: "domainName", type: Type.TYPE_STRING },
+    { name: "domainName", type: FieldType.TYPE_STRING },
     {
       name: "subDomains",
-      type: Type.TYPE_STRING,
-      label: Label.LABEL_REPEATED,
+      type: FieldType.TYPE_STRING,
+      label: FieldLabel.LABEL_REPEATED,
     },
   ],
   returns: [
-    { name: "certificateArn", type: Type.TYPE_STRING },
-    { name: "hostedZoneId", type: Type.TYPE_STRING },
+    { name: "certificateArn", type: FieldType.TYPE_STRING },
+    { name: "hostedZoneId", type: FieldType.TYPE_STRING },
   ],
   async handler(
     clients: HandlerClients,
@@ -73,14 +79,14 @@ export const createCertificates = {
 
     if (!certificate?.CertificateArn || !hostedZone.HostedZoneId) {
       return {
-        label: Status.ERROR.toString(),
+        label: labelToJSON(Label.FAILURE),
         message: "Failed to create certificate: Missing required return values",
         state: {},
       };
     }
 
     return {
-      label: Status.COMPLETED.toString(),
+      label: labelToJSON(Label.SUCCESS),
       state: {
         certificateArn: certificate.CertificateArn,
         hostedZoneId: hostedZone.HostedZoneId,

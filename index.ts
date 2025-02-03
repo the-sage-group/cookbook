@@ -17,7 +17,7 @@ for (const handler of aws.nodes) {
       throw error;
     } else {
       router[`${handler.context}.${handler.name}`] = handler.handler;
-      console.dir(response, { depth: null });
+      // console.dir(response, { depth: null });
     }
   });
 }
@@ -29,17 +29,20 @@ stream.on("data", async (event: Event) => {
   console.log("Received event:", event);
   switch (event.status) {
     case Status.EXECUTING:
-      const { handler } = event;
-      if (!handler) {
-        throw new Error("Handler is undefined");
+      const { position } = event;
+      if (!position) {
+        throw new Error("Position is undefined");
       }
-      const handlerFn = router[`${handler.context}.${handler.name}`];
+      const handlerFn =
+        router[`${position.handler?.context}.${position.handler?.name}`];
       const result = await handlerFn(clients, event.state);
-      stream.write({
-        ...result,
+      const response = {
         ...event,
+        ...result,
         status: Status.COMPLETED,
-      });
+      };
+      console.log("Completed event:", response);
+      stream.write(response);
       break;
     default:
       console.log("Unknown event type:", event.status);
