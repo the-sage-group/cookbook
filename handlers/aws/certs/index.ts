@@ -6,7 +6,7 @@ import {
   labelToJSON,
 } from "@the-sage-group/awyes-node";
 import { waitUntilCertificateValidated } from "@aws-sdk/client-acm";
-import { HandlerClients } from "../clients";
+import { HandlerClients } from "../../clients";
 
 export const createCertificates = {
   version: 1,
@@ -79,14 +79,16 @@ export const createCertificates = {
 
     if (!certificate?.CertificateArn || !hostedZone.HostedZoneId) {
       return {
-        label: labelToJSON(Label.FAILURE),
-        message: "Failed to create certificate: Missing required return values",
+        exitLabel: labelToJSON(Label.FAILURE),
+        exitMessage:
+          "Failed to create certificate: Missing required return values",
         state: {},
       };
     }
 
     return {
-      label: labelToJSON(Label.SUCCESS),
+      exitLabel: labelToJSON(Label.SUCCESS),
+      exitMessage: "Certificate created successfully",
       state: {
         certificateArn: certificate.CertificateArn,
         hostedZoneId: hostedZone.HostedZoneId,

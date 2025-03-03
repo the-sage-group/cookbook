@@ -5,7 +5,7 @@ import {
   Event,
   labelToJSON,
 } from "@the-sage-group/awyes-node";
-import { HandlerClients } from "../clients";
+import { HandlerClients } from "../../clients";
 
 export const getInfra = {
   version: 1,
@@ -41,14 +41,15 @@ export const getInfra = {
 
     if (!describeVpcs.Vpcs || !describeSubnets.Subnets) {
       return {
-        label: labelToJSON(Label.FAILURE),
-        message: "Failed to fetch infrastructure: Missing VPCs or Subnets",
+        exitLabel: labelToJSON(Label.FAILURE),
+        exitMessage: "Failed to fetch infrastructure: Missing VPCs or Subnets",
         state: {},
       };
     }
 
     return {
-      label: labelToJSON(Label.SUCCESS),
+      exitLabel: labelToJSON(Label.SUCCESS),
+      exitMessage: "Infrastructure fetched successfully",
       state: {
         subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId),
         vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId),

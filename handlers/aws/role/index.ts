@@ -4,7 +4,7 @@ import {
   Event,
   labelToJSON,
 } from "@the-sage-group/awyes-node";
-import { HandlerClients } from "../clients";
+import { HandlerClients } from "../../clients";
 
 export const createRole = {
   version: 1,
@@ -72,14 +72,15 @@ export const createRole = {
 
     if (!getRole.Role?.Arn) {
       return {
-        label: labelToJSON(Label.FAILURE),
-        message: "Failed to create role: Missing role ARN",
+        exitLabel: labelToJSON(Label.FAILURE),
+        exitMessage: "Failed to create role: Missing role ARN",
         state: {},
       };
     }
 
     return {
-      label: labelToJSON(Label.SUCCESS),
+      exitLabel: labelToJSON(Label.SUCCESS),
+      exitMessage: "Role created successfully",
       state: { roleArn: getRole.Role.Arn },
     };
   },
