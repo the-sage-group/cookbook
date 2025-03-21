@@ -1,0 +1,6 @@
+{
+  "watch": ["**/*.ts", "routes/**/*.textproto", "routes/**/*.proto"],
+  "ext": "ts,textproto,proto",
+  "ignore": ["node_modules", "dist"],
+  "exec": "npx tsx index.ts"
+}

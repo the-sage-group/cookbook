@@ -1,72 +1,64 @@
-# Sample Route using getInfra handler
+# Sample Route using get_infra handler
 context: "aws"
 name: "infra_management"
 version: 1
 description: "A route for infrastructure management operations"
 
 # Parameters for the route
-parameters {
+parameter {
   name: "region"
   label: LABEL_OPTIONAL
   type: TYPE_STRING
 }
 
-parameters {
+parameter {
   name: "resource_type"
   label: LABEL_OPTIONAL
   type: TYPE_STRING
 }
 
 # Positions for the route
-positions {
+position {
   name: "Start"
-  description: "Entry point for infrastructure operations"
+  description: "Entry point for example route"
   handler: "infra.start"
-  transitions {
+  transition {
     label: "SUCCESS"
-    position: "Resource Fetching"
-  }
-  transitions {
-    label: "SUCCESS"
-    position: "Resource Analysis"
-  }
-  transitions {
-    label: "SUCCESS"
-    position: "Operation Complete"
+    position: "Make your move"
   }
 }
 
-positions {
-  name: "Resource Fetching"
-  description: "Retrieving infrastructure resources"
-  handler: "aws.getInfra"
-  transitions {
+position {
+  name: "Make your move"
+  description: "Really do it"
+  handler: "aws.get_infra"
+  transition {
+    label: "SUCCESS"
+    position: "Do some stuff"
+  }
+}
+
+position {
+  name: "Do some stuff"
+  description: "Do some stuff"
+  handler: "aws.get_infra"
+  transition {
+    label: "SUCCESS"
+    position: "Finish him!"
+  }
+}
+
+position {
+  name: "Finish him!"
+  description: "Finish him!"
+  handler: "aws.get_infra"
+  transition {
     label: "SUCCESS"
     position: "End"
   }
 }
 
-positions {
-  name: "Resource Analysis"
-  description: "Analyzing infrastructure components"
-  handler: "aws.getInfra"
-  transitions {
-    label: "SUCCESS"
-    position: "End"
-  }
-}
-
-positions {
-  name: "Operation Complete"
-  description: "Infrastructure operation completed"
-  handler: "aws.getInfra"
-  transitions {
-    label: "SUCCESS"
-    position: "End"
-  }
-}
-
-positions {
+position {
   name: "End"
   description: "End of the route"
   handler: "infra.end"
