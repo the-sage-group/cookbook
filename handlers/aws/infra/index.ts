@@ -51,8 +51,14 @@ export const getInfra = {
       exitLabel: labelToJSON(Label.SUCCESS),
       exitMessage: "Infrastructure fetched successfully",
       state: {
-        subnetIds: describeSubnets.Subnets.map((subnet) => subnet.SubnetId),
-        vpcIds: describeVpcs.Vpcs.map((vpc) => vpc.VpcId),
+        subnetIds: new TextEncoder().encode(
+          JSON.stringify(
+            describeSubnets.Subnets.map((subnet) => subnet.SubnetId!)
+          )
+        ),
+        vpcIds: new TextEncoder().encode(
+          JSON.stringify(describeVpcs.Vpcs.map((vpc) => vpc.VpcId!))
+        ),
       },
     };
   },

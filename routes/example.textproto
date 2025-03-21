@@ -26,6 +26,10 @@ position {
     label: "SUCCESS"
     position: "Make your move"
   }
+  transition {
+    label: "FAILURE"
+    position: "Error Handler"
+  }
 }
 
 position {
@@ -35,6 +39,10 @@ position {
   transition {
     label: "SUCCESS"
     position: "Do some stuff"
+  }
+  transition {
+    label: "FAILURE"
+    position: "Error Handler"
   }
 }
 
@@ -46,6 +54,10 @@ position {
     label: "SUCCESS"
     position: "Finish him!"
   }
+  transition {
+    label: "FAILURE"
+    position: "Error Handler"
+  }
 }
 
 position {
@@ -56,6 +68,16 @@ position {
     label: "SUCCESS"
     position: "End"
   }
+  transition {
+    label: "FAILURE"
+    position: "Error Handler"
+  }
+}
+
+position {
+  name: "Error Handler"
+  description: "Handles all errors in the route"
+  handler: "infra.error"
 }
 
 position {
