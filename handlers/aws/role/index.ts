@@ -81,7 +81,7 @@ export const createRole = {
     return {
       exitLabel: labelToJSON(Label.SUCCESS),
       exitMessage: "Role created successfully",
-      state: { roleArn: getRole.Role.Arn },
+      state: { roleArn: new TextEncoder().encode(getRole.Role.Arn) },
     };
   },
 };

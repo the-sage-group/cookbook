@@ -27,8 +27,12 @@ position {
     position: "Make your move"
   }
   transition {
-    label: "FAILURE"
-    position: "Error Handler"
+    label: "SUCCESS"
+    position: "Do some stuff"
+  }
+  transition {
+    label: "SUCCESS"
+    position: "Finish him!"
   }
 }
 
@@ -36,13 +40,17 @@ position {
   name: "Make your move"
   description: "Really do it"
   handler: "aws.get_infra"
-  transition {
-    label: "SUCCESS"
-    position: "Do some stuff"
+  argument {
+    key: "region"
+    value: "{{.region}}"
+  }
+  argument {
+    key: "resource_type"
+    value: "{{.resource_type}}"
   }
   transition {
-    label: "FAILURE"
-    position: "Error Handler"
+    label: "SUCCESS"
+    position: "End"
   }
 }
 
@@ -52,14 +60,10 @@ position {
   handler: "aws.get_infra"
   transition {
     label: "SUCCESS"
-    position: "Finish him!"
+    position: "End"
   }
-  transition {
-    label: "FAILURE"
-    position: "Error Handler"
-  }
-}
 
+}
 position {
   name: "Finish him!"
   description: "Finish him!"
@@ -68,16 +72,6 @@ position {
     label: "SUCCESS"
     position: "End"
   }
-  transition {
-    label: "FAILURE"
-    position: "Error Handler"
-  }
-}
-
-position {
-  name: "Error Handler"
-  description: "Handles all errors in the route"
-  handler: "infra.error"
 }
 
 position {
